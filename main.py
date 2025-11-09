@@ -3,8 +3,10 @@ import webbrowser
 import pyttsx3
 
 recogniser = sr.Recognizer()
-##ttsx = pyttsx3.init()
+
 engine = pyttsx3.init()
+rate = engine.getProperty('rate')
+engine.setProperty('rate', rate - 50) 
 def speak(text):
     engine.say(text)
     engine.runAndWait()
