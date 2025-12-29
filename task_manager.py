@@ -1,4 +1,6 @@
 import os
+from json_handler import Json_reader
+from json_handler import Json_writer
 
 FILE_NAME = "tasks.txt"
 
@@ -48,3 +50,17 @@ def remove_task(tasks, task_num):
     except (ValueError, IndexError):
         print("Invalid number.")
 
+
+def load_json_tasks():
+    """
+    Call Json_reader from json_handler
+    """
+    return Json_reader(FILE_NAME)
+
+
+
+def write_json_tasks(Data):
+    """
+    Call Json_writer form json_handler
+    """
+    Json_writer(Data, FILE_NAME)
