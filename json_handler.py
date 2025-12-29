@@ -1,79 +1,86 @@
 import json
+from typing import List, Dict
 
-# Define the to-do data as a Python dictionary
-todo_data = {
-    "todos": [
-        {
-            "id": 1,
-            "title": "Buy groceries",
-            "description": "Milk, eggs, bread, butter",
-            "completed": False,
-            "due_date": "2025-12-30"
-        },
-        {
-            "id": 2,
-            "title": "Complete homework",
-            "description": "Finish math exercises and history essay",
-            "completed": True,
-            "due_date": "2025-12-29"
-        },
-        {
-            "id": 3,
-            "title": "Clean the room",
-            "description": "Vacuum, dust shelves, organize books",
-            "completed": False,
-            "due_date": "2025-12-31"
-        }
-    ]
-}
+JSON_FILE_NAME = "todo.json" 
 
-tasks = [
-    {"task": "Finish homework", "due": "2025-12-30"},
-    {"task": "Buy groceries", "due": "2025-12-28"},
-]
+class Tasks:
+    id: int
+    task: str
+    due: str
+    mark: bool
+    # def __init__(self, id, task, due, mark):
+    def __init__(self, *args, **kwargs):
+        if len(args) == 1 and isinstance(args[0], dict):
+            self.tasks = [args[0]]
 
-def Dict_to_Json(Dict_Data: dict, indentation=4) -> str:
-    """
-    Converts a dictionary to a JSON string with specified indentation.
+        elif len(args) == 4:
+            self.tasks = [{
+                "id": args[0],
+                "task": args[1],
+                "due": args[2],
+                "mark": args[3]
+            }]
 
-    Parameters:
-    Dict_Data (dict): The dictionary to convert.
-    indentation (int): Number of spaces for indentation (default is 4).
+        elif kwargs:
+            self.tasks = [kwargs]
 
-    Returns:
-    str: A formatted JSON string.
-    """
-    return json.dumps(Dict_Data, indent=indentation)
+        else:
+            raise ValueError("Invalid arguments")
+    
+    def add_dict_task(self, data):
+        if len(data)==4:
+            self.tasks.append(data)
+        else:
+            raise ValueError("Invalid arguments")
+    
+    def remove_task(self, id: int):
+        for i, data in enumerate(self.tasks):
+            if data["id"] == id:
+                self.tasks.pop(i)
+                break
 
+    def get_tasks(self):
+        return self.tasks
+    
 
-def Json_reader(file_name="notes.txt") -> str:
-    """
-    Reads the contents of a JSON file and returns it as a string.
+class JsonManager:
+    def __init__(self, file_name=JSON_FILE_NAME):
+        self.file_name = file_name
+    
+    def Load_Json(self):
+        try:
+            with open(self.file_name, "r") as file:
+                return json.load(file)
+        except (FileNotFoundError, json.decoder.JSONDecodeError):
+            return []
+    
+    def Save_Json(self, Data):
+        try:
+            with open(self.file_name, "w") as file:
+                json.dump(Data, file, indent=4)
+                print(f"Data Saved to {self.file_name}")
+        except Exception as e:
+            print(e)
 
-    :param file_name: The name of the file to read (default is "notes.txt").
-    :return: The content of the file as a string.
-    :rtype: str
-    """
-    try:
-        with open(file_name, "r") as file:
-            return file.load()
-    except FileNotFoundError:
-        return []
+con = {
+        "id": 12456,
+        "task": "Nesw task",
+        "due": "27-12-2025",
+        "mark": "False"
+    }
+if __name__ == "__main__":
+    manager = JsonManager()
+    context = manager.Load_Json()
 
-
-
-def Json_writer(data_to_write: str, file_name="notes.txt"):
-    """
-    Writes data to a specified text file.
-
-    Parameters:
-    data_to_write (str): Data to write into the file.
-    file_name (str): The file name (default is "notes.txt").
-    """
-    with open(file_name, "w") as file:
-        file.write(data_to_write)
-    print(f"Data saved to {file_name}")
-
-
-tasks.append({"task": "Do this thing tommorw", "due":  "2025-12-31"})
-Json_writer(Dict_to_Json(tasks))
+    # print(type(context), "\n"+f"{context}")
+    
+    # print(context[0])
+    tasks = Tasks(**context[0])
+    tasks.add_dict_task(con)
+    manager.Save_Json(tasks.get_tasks())
+    print(tasks.get_tasks())
+    # print("WRITING NEW CONTEXT")
+    # manager.Save_Json(con)
+    # context = manager.Load_Json()
+    # print(type(context), "\n"+f"{context}")
+    

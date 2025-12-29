@@ -1,6 +1,5 @@
 import os
-from json_handler import Json_reader
-from json_handler import Json_writer
+import json_handler
 
 FILE_NAME = "tasks.txt"
 
@@ -55,7 +54,7 @@ def load_json_tasks():
     """
     Call Json_reader from json_handler
     """
-    return Json_reader(FILE_NAME)
+    return json_handler.JsonManager(FILE_NAME).load_Json()
 
 
 
@@ -63,4 +62,4 @@ def write_json_tasks(Data):
     """
     Call Json_writer form json_handler
     """
-    Json_writer(Data, FILE_NAME)
+    return json_handler.JsonManager(FILE_NAME).save_Json(Data)
