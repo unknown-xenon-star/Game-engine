@@ -17,7 +17,7 @@ class Task:
     # kwargs -> dict
     def __init__(self, *args, **kwargs):
         if len(args) == 1 and isinstance(args[0], dict):
-            self.task = args[0]
+            self.task = list(args[0])
         elif len(args) == 4:
             self.task = {
                 "id": args[0],
@@ -49,8 +49,10 @@ class Task:
     def values(self):
         return self.task.values()
 
-
-    def get_task(self):
+    def get_task(self) -> Dict[str, str]:
+        return self.task
+    
+    def To_Dict(self) -> Dict[str, str]:
         return self.task
 # Task Data in Json
 class JsonData:
@@ -87,10 +89,9 @@ class JsonData:
                 "mark": data[3]
             }))
     def add_task(self, data: Task):
-        if isinstance(data, Task):
-            self.tasks.append(data)
-        else:
-            raise TypeError("Expected: Task Object")
+        if not isinstance(data, Task):
+            raise TypeError(f"Expected a Task object, got {type(data).__name__}")
+        self.tasks.append(data)
     
     def add_dict_task(self, data):
         if len(data)==4:
@@ -114,6 +115,8 @@ class JsonManager:
     
     def Save_Json(self, Data):
         try:
+            if any(isinstance(obj, Task) for obj in Data):
+                Data = [task.To_Dict() for task in Data]
             with open(self.file_name, "w") as file:
                 json.dump(Data, file, indent=4)
                 print(f"Data Saved to {self.file_name}")
