@@ -59,7 +59,7 @@ class JsonData:
     def __init__(self, *args):
         if args:
             if len(args)==1 and isinstance(args, (list, tuple)):
-                self.tasks = args[0]
+                self.tasks = list(args[0])
             else:
                 raise TypeError("Exaclty One *args Nedded")
         else:
@@ -120,8 +120,8 @@ class JsonManager:
             with open(self.file_name, "w") as file:
                 json.dump(Data, file, indent=4)
                 print(f"Data Saved to {self.file_name}")
-        except Exception as e:
-            print(e)
+        except (IOError, json.JSONDecodeError) as e:
+            print(f"Error saving data: {e}")
 
 if __name__ == "__main__":
     con = {
